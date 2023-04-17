@@ -9,11 +9,15 @@ for (var i = 0; i < titleElements.length; i++) {
     titleElements[i].style.color = "green";
  }
 
-items[1].style.backgroundColor = 'green';
-items[2].style.display = 'none';
+ var secondItem = document.querySelectorAll('.list-group-item:nth-of-type(2)');
+ secondItem[0].style.color = 'green';
+
 
 for (var i = 0; i < items.length; i++) {
     items[i].style.fontWeight = "bold";
+    if(i % 2 == 0){
+        items[i].style.backgroundColor = 'green';
+    }
 }
 
 var newItem = document.createElement('li');
@@ -22,8 +26,7 @@ var list = document.getElementById('list');
 list.appendChild(newItem);
 
 
-var newItem1 = document.getElementsByClassName('list-group')[0].getElementsByClassName('new-item')[0];
-newItem1.textContent = "New item using getElementsByClassName()";
+
 
 
 var list = document.getElementsByTagName('ul')[0];
