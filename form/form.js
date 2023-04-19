@@ -1,5 +1,5 @@
-function saveUser(name, email) {
-  const user = name + "," + email;
+function saveUser(name, email, phone) {
+  const user = name + "," + email + "," + phone;
   const users = localStorage.getItem("users") || "";
   localStorage.setItem("users", users + ";" + user);
 }
@@ -14,10 +14,23 @@ function displayUsers() {
     if (userString !== "") {
       const user = userString.split(",");
       const li = document.createElement("li");
-      li.appendChild(document.createTextNode(`${user[0]} (${user[1]})`));
+      li.appendChild(document.createTextNode(`${user[0]} (${user[1]}, ${user[2]})`));
+      const deleteButton = document.createElement("button");
+      deleteButton.appendChild(document.createTextNode("Delete"));
+      deleteButton.addEventListener("click", function() {
+        deleteUser(userString);
+        displayUsers();
+      });
+      li.appendChild(deleteButton);
       usersList.appendChild(li);
     }
   });
+}
+
+function deleteUser(userString) {
+  const users = localStorage.getItem("users") || "";
+  const updatedUsers = users.replace(userString + ";", "");
+  localStorage.setItem("users", updatedUsers);
 }
 
 const form = document.getElementById("my-form");
@@ -27,16 +40,18 @@ form.addEventListener("submit", function(event) {
 
   const nameInput = document.getElementById("name");
   const emailInput = document.getElementById("email");
+  const phoneInput = document.getElementById("phone");
 
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();
+  const phone = phoneInput.value.trim();
 
-  if (name === "" || email === "") {
-    alert("Please enter both name and email");
+  if (name === "" || email === "" || phone ==="") {
+    alert("Please enter name , email and phone number");
     return;
   }
 
-  saveUser(name, email);
+  saveUser(name, email, phone);
   displayUsers();
   form.reset();
 });
