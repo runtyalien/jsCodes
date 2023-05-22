@@ -43,7 +43,7 @@
             };
 
             // Send appointment data to the server
-            axios.post("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42", appointment)
+            axios.post("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData", appointment)
                 .then((response) => {
                     console.log(response.data);
                     displayAppointments(); // Refresh the displayed appointments
@@ -61,7 +61,7 @@
         // Display appointments on the webpage
         function displayAppointments() {
             // Retrieve appointments from the server
-            axios.get("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42")
+            axios.get("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData")
                 .then((response) => {
                     var appointments = response.data;
 
