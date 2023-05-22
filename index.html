@@ -16,6 +16,8 @@
         <label for="phone">Phone Number:</label>
         <input type="tel" id="phone" required><br>
 
+        <input type="hidden" id="appointmentId">
+
         <button type="submit">Submit</button>
     </form>
 
@@ -23,7 +25,6 @@
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-
         displayAppointments();
 
         document.getElementById('appointmentForm').addEventListener('submit', function (event) {
@@ -39,22 +40,36 @@
                 phone: phone
             };
 
-            
-            axios.post("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData", appointment)
-                .then((response) => {
-                    console.log(response.data);
-                    displayAppointments(); 
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+            var appointmentId = document.getElementById('appointmentId').value;
+
+            if (appointmentId) {
+                // Edit appointment
+                axios.put(`https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData/${appointmentId}`, appointment)
+                    .then((response) => {
+                        console.log(response.data);
+                        displayAppointments(); 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                // Create appointment
+                axios.post("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData", appointment)
+                    .then((response) => {
+                        console.log(response.data);
+                        displayAppointments(); 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
 
             document.getElementById('name').value = '';
             document.getElementById('email').value = '';
             document.getElementById('phone').value = '';
+            document.getElementById('appointmentId').value = '';
         });
 
-        
         function displayAppointments() {
             axios.get("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData")
                 .then((response) => {
@@ -72,7 +87,7 @@
                             <h3>${appointment.name}</h3>
                             <p>Email: ${appointment.email}</p>
                             <p>Phone: ${appointment.phone}</p>
-                            <button onclick="editAppointment(event)">Edit</button>
+                            <button onclick="editAppointment('${appointment._id}', '${appointment.name}', '${appointment.email}', '${appointment.phone}')">Edit</button>
                             <button onclick="deleteAppointment(event)">Delete</button>
                             <hr>
                         `;
@@ -85,16 +100,21 @@
                 });
         }
 
-        
+        function editAppointment(id, name, email, phone) {
+            document.getElementById('name').value = name;
+            document.getElementById('email').value = email;
+            document.getElementById('phone').value = phone;
+            document.getElementById('appointmentId').value = id;
+        }
+
         function deleteAppointment(event) {
             var appointmentItem = event.target.parentNode;
             var appointmentId = appointmentItem.getAttribute('data-id');
-            
-            
+
             axios.delete(`https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData/${appointmentId}`)
                 .then((response) => {
                     console.log(response.data);
-                    appointmentItem.remove(); 
+                    appointmentItem.remove(); // Remove the appointment from the page
                 })
                 .catch((error) => {
                     console.error(error);
