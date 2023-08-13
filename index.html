@@ -1,34 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-  <title>Item Lister</title>
+    <title>Appointment App</title>
 </head>
 <body>
-  <header id="main-header" class="bg-success text-white p-4 mb-3">
-    <div class="container">
-      <h1 id="header-title">Item Lister </h1>
-    </div>
-  </header>
-  <div class="container">
-   <div id="main" class="card card-body">
-    <h2 class="title">Add Items</h2>
-    <form class="form-inline mb-3">
-      <input type="text" class="form-control mr-2">
-      <input type="submit" class="btn btn-dark" value="Submit">
+    <h1>Appointment App</h1>
+
+    <form id="appointmentForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br>
+
+        <label for="email">Email ID:</label>
+        <input type="email" id="email" required><br>
+
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" required><br>
+
+        <input type="hidden" id="appointmentId">
+
+        <button type="submit">Submit</button>
     </form>
-    <h2 class="title">Items</h2>
-    <ul id="items" class="list-group">
-      <li class="list-group-item">Item 1</li>
-      <li class="list-group-item">Item 2</li>
-      <li class="list-group-item">Item 3</li>
-      <li class="list-group-item">Item 4</li>
-    </ul>
-   </div>
-  </div>
-  <script src=""></script>
+
+    <div id="appointmentList"></div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        displayAppointments();
+
+        document.getElementById('appointmentForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var phone = document.getElementById('phone').value;
+
+            var appointment = {
+                name: name,
+                email: email,
+                phone: phone
+            };
+
+            var appointmentId = document.getElementById('appointmentId').value;
+
+            if (appointmentId) {
+                // Edit appointment
+                axios.put(`https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData/${appointmentId}`, appointment)
+                    .then((response) => {
+                        console.log(response.data);
+                        displayAppointments(); 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                // Create appointment
+                axios.post("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData", appointment)
+                    .then((response) => {
+                        console.log(response.data);
+                        displayAppointments(); 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('appointmentId').value = '';
+        });
+
+        function displayAppointments() {
+            axios.get("https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData")
+                .then((response) => {
+                    var appointments = response.data;
+
+                    var appointmentList = document.getElementById('appointmentList');
+                    appointmentList.innerHTML = '';
+
+                    for (var i = 0; i < appointments.length; i++) {
+                        var appointment = appointments[i];
+
+                        var appointmentItem = document.createElement('div');
+                        appointmentItem.setAttribute('data-id', appointment._id); 
+                        appointmentItem.innerHTML = `
+                            <h3>${appointment.name}</h3>
+                            <p>Email: ${appointment.email}</p>
+                            <p>Phone: ${appointment.phone}</p>
+                            <button onclick="editAppointment('${appointment._id}', '${appointment.name}', '${appointment.email}', '${appointment.phone}')">Edit</button>
+                            <button onclick="deleteAppointment(event)">Delete</button>
+                            <hr>
+                        `;
+
+                        appointmentList.appendChild(appointmentItem);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+        function editAppointment(id, name, email, phone) {
+            document.getElementById('name').value = name;
+            document.getElementById('email').value = email;
+            document.getElementById('phone').value = phone;
+            document.getElementById('appointmentId').value = id;
+        }
+
+        function deleteAppointment(event) {
+            var appointmentItem = event.target.parentNode;
+            var appointmentId = appointmentItem.getAttribute('data-id');
+
+            axios.delete(`https://crudcrud.com/api/accc047a07dd4166ab525c3c0f7bdd42/appointmentData/${appointmentId}`)
+                .then((response) => {
+                    console.log(response.data);
+                    appointmentItem.remove(); // Remove the appointment from the page
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+    </script>
 </body>
 </html>

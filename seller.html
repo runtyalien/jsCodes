@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -130,3 +131,137 @@
     </script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product List</title>
+    <style>
+        .product-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .product-list li {
+            margin-bottom: 10px;
+        }
+        .product-list li span {
+            margin-right: 10px;
+        }
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .form-row label {
+            margin-right: 10px;
+        }
+        .form-row input,
+        .form-row select {
+            margin-right: 10px;
+        }
+        .form-row input[type="text"],
+        .form-row select {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add Product</h1>
+    <form onsubmit="event.preventDefault(); addItem();">
+        <div class="form-row">
+            <label for="price">Price:</label>
+            <input type="text" id="price" required>
+        </div>
+        
+        <div class="form-row">
+            <label for="category">Category:</label>
+            <select id="category" required>
+                <option value="Electronic">Electronic</option>
+                <option value="Food">Food</option>
+                <option value="Skincare">Skincare</option>
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" required>
+        </div>
+        
+        <button type="submit">Add</button>
+    </form>
+
+    <h1>Product List</h1>
+    <h2>Electronic</h2>
+    <ul id="electronicList" class="product-list"></ul>
+    
+    <h2>Food</h2>
+    <ul id="foodList" class="product-list"></ul>
+    
+    <h2>Skincare</h2>
+    <ul id="skincareList" class="product-list"></ul>
+
+    <script>
+        // Function to handle form submission
+        function addItem() {
+            var price = document.getElementById('price').value;
+            var category = document.getElementById('category').value;
+            var productName = document.getElementById('productName').value;
+
+            // Make a POST request to crudcrud to add the item
+            fetch('https://crudcrud.com/api/97c06fcec31b40ef8790aadc1a90349c/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    price: price,
+                    category: category,
+                    productName: productName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Item added successfully, update the list
+                var listItem = document.createElement('li');
+                var itemData = document.createElement('span');
+                var deleteButton = document.createElement('button');
+
+                itemData.textContent = price + ' ' + category + ' ' + productName;
+                deleteButton.textContent = 'Delete';
+                deleteButton.className = 'delete-btn';
+                deleteButton.onclick = function() {
+                    // Make a DELETE request to crudcrud to remove the item
+                    fetch('https://crudcrud.com/api/97c06fcec31b40ef8790aadc1a90349c/products/' + data._id, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        // Item deleted successfully, remove it from the list
+                        listItem.remove();
+                    })
+                    .catch(error => {
+                        console.log('Error deleting item:', error);
+                    });
+                };
+
+                listItem.appendChild(itemData);
+                listItem.appendChild(deleteButton);
+
+                // Add the item to the corresponding category list
+                var categoryList = document.getElementById(category.toLowerCase() + 'List');
+                categoryList.appendChild(listItem);
+            })
+            .catch(error => {
+                console.log('Error adding item:', error);
+            });
+        }
+    </script>
+</body>
+</html>
+>>>>>>> 5ec751c13870527f9f8e0362848eb94bf0f32f1a
